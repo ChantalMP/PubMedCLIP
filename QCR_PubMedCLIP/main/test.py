@@ -85,7 +85,7 @@ def evaluate_classifier(model,pretrained_model, dataloader, cfg, n_unique_close,
             else:
                 last_output_close, last_output_open, a_close, a_open, indexs_open, indexs_close = model.forward_classify(v, q, a, pretrained_model, n_unique_close)
 
-            preds_close, preds_open = model.classify(last_output_close, last_output_open)
+            preds_close, preds_open = model.classify(last_output_close, last_output_open) #linear layer for answer prediction
             
             batch_close_score = 0.
             batch_open_score = 0.

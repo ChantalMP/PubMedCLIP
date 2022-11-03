@@ -36,13 +36,13 @@ TRAIN:
     CAT: True
     HID_DIM: 1024   ## Dim of joint semantic features
   VISION:
-    V_DIM: 1088    ## Visual input dim : 1024 + 64
+    V_DIM: 64    ## Visual input dim : 1024 + 64 #if CLIP is False
     AUTOENCODER: True 
     AE_PATH: "pretrained_ae.pth"
     AE_ALPHA: 0.001
     MAML: False
-    CLIP: True
-    CLIP_ORG: True
+    CLIP: False
+    CLIP_ORG: False
     CLIP_VISION_ENCODER: "RN50"
     OTHER_MODEL: False
 

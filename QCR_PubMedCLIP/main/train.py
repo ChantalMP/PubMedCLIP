@@ -72,6 +72,7 @@ def train(cfg, model, question_model, train_loader, eval_loader, n_unique_close,
     best_epoch = 0
     # Epoch passing in training phase
     for epoch in range(s_epoch, cfg.TRAIN.N_EPOCH):
+        print("Epoch: ", epoch)
         total_loss = 0
         total_open_loss = 0
         total_close_loss = 0
@@ -83,6 +84,7 @@ def train(cfg, model, question_model, train_loader, eval_loader, n_unique_close,
         
         # Predicting and computing score
         for i, (v, q, a, answer_type, question_type, phrase_type, answer_target) in enumerate(train_loader):
+            print("i: ", i) #TODO very slow, need small test dataset
             optim.zero_grad()
             if cfg.TRAIN.VISION.MAML:
                 v[0] = v[0].reshape(v[0].shape[0], 84, 84).unsqueeze(1)

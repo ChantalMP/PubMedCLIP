@@ -132,7 +132,7 @@ class BAN_Model(nn.Module):
             self.ae = Auto_Encoder_Model()
             weight_path = cfg.DATASET.DATA_DIR + '/' + cfg.TRAIN.VISION.AE_PATH
             print('load initial weights DAE from: %s' % (weight_path))
-            self.ae.load_state_dict(torch.load(weight_path))
+            self.ae.load_state_dict(torch.load(weight_path, map_location=device))
             self.convert = nn.Linear(16384, 64)
         # build and load pre-trained CLIP model
         if cfg.TRAIN.VISION.CLIP:
@@ -218,7 +218,7 @@ class BAN_Model(nn.Module):
             decoder = self.ae.reconstruct_pass(encoder)
             ae_v_emb = encoder.view(encoder.shape[0], -1)
             ae_v_emb = self.convert(ae_v_emb).unsqueeze(1)
-            v_emb = ae_v_emb
+            v_emb = ae_v_emb #here visual embedding has 64 dim
         if self.cfg.TRAIN.VISION.CLIP:
             clip_v_emb = self.clip.encode_image(v[2]).unsqueeze(1)
             v_emb = clip_v_emb

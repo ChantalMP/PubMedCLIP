@@ -15,6 +15,8 @@ from torch.utils.data import DataLoader
 import utils
 from BAN.multi_level_model import BAN_Model
 import torch
+
+from QCR_PubMedCLIP.lib.dataset import VQARADFeatureDataset, VQASLAKEFeatureDataset
 from train import train
 from test import test
 from language.classify_question import classify_model
@@ -28,7 +30,7 @@ def parse_args():
             "--cfg",
             help="decide which cfg to use",
             required=False,
-            default="/home/test.yaml",
+            default="configs/qcr_clipOrgRN50_ae_rad_16batchsize_withtfidf_nondeterministic.yaml",
             type=str,
             )
     # GPU config
@@ -45,7 +47,7 @@ if __name__ == '__main__':
     torch.cuda.empty_cache()
 
     args = parse_args()
-    device = torch.device("cuda:" + str(args.gpu) if args.gpu >= 0 else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     args.device = device
     update_config(cfg, args)
     data_dir = cfg.DATASET.DATA_DIR
@@ -77,20 +79,20 @@ if __name__ == '__main__':
     question_classify = classify_model(d.ntoken, glove_weights_path)
     if cfg.DATASET.DATASET == "SLAKE":
         ckpt = './saved_models/type_classifier_slake.pth'
-        pretrained_model = torch.load(ckpt, map_location='cuda:0')['model_state']
+        pretrained_model = torch.load(ckpt, map_location=args.device)['model_state']
     else:
         ckpt = './saved_models/type_classifier.pth'
         qtype_ckpt = './saved_models/qtype_classifier.pth'
-        pretrained_model = torch.load(ckpt, map_location='cuda:0')
+        pretrained_model = torch.load(ckpt, map_location=args.device)
     question_classify.load_state_dict(pretrained_model)
 
     # training phase
     # create VQA model and question classify model
     if args.test:
-        model = BAN_Model(val_dataset, cfg, device)
-        model_data = torch.load(cfg.TEST.MODEL_FILE)
-        model.load_state_dict(model_data.get('model_state', model_data), strict=False)
+        model = BAN_Model(val_dataset, cfg, args.device)
+        #model_data = torch.load(cfg.TEST.MODEL_FILE)
+        #model.load_state_dict(model_data.get('model_state', model_data), strict=False)
         test(cfg, model, question_classify, val_loader, train_dataset.num_close_candidates, args.device)
     else:
-        model = BAN_Model(train_dataset, cfg, device)
+        model = BAN_Model(train_dataset, cfg, args.device)
         train(cfg, model, question_classify, train_loader, val_loader, train_dataset.num_close_candidates, args.device)

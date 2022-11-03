@@ -149,7 +149,7 @@ _C.TEST = CN()
 _C.TEST.BATCH_SIZE = 32
 _C.TEST.NUM_WORKERS = 8
 _C.TEST.MODEL_FILE = ""
-_C.TEST.RESULT_DIR = ""
+_C.TEST.RESULT_DIR = "test_results"
 
 _C.TRANSFORMS = CN()
 _C.TRANSFORMS.TRAIN_TRANSFORMS = ("random_resized_crop", "random_horizontal_flip")
